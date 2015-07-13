@@ -22,25 +22,34 @@ Game.ki = {
         } else {
             difficulty = 3;
         }
-        //alert("F: selectDifficulty, " + difficulty);
         return difficulty;
     },
-    selectField: function (botName) {
+    selectField: function ($element, botName) {
         // dort soll das nächste Feld ausgewählt werden, das angegriffen wird.
 
-
+        if (botName == "bot-1") {
+            return Game.ki.getOneAttackableField(Game.ki.getAllFields($element));
+        } else if (botName == "bot-2") {
+            return Game.ki.getOneAttackableField(Game.ki.getAllFields($element));
+        } else if (botName == "bot-3") {
+            return Game.ki.getOneAttackableField(Game.ki.getAllFields($element));
+        } else if (botName == "bot-4") {
+            return Game.ki.getOneAttackableField(Game.ki.getAllFields($element));
+        } else {
+            return Game.ki.getOneAttackableField(Game.ki.getAllFields($element));
+        }
     },
-    selectAnswer: function (questionDifficulty, botName) {
+    selectAnswer: function (botName, questionDifficulty) {
         //dort soll die passende Antwort ausgewählt werden.
         var rand = Game.static.random(100);
         var botActiv = 0;
-        if (botName == "Bot-1") {
+        if (botName == "bot-1") {
             botActiv = 24;
-        } else if (botName == "Bot-2") {
+        } else if (botName == "bot-2") {
             botActiv = 48;
-        } else if (botName == "Bot-3") {
+        } else if (botName == "bot-3") {
             botActiv = 60;
-        } else if (botName == "Bot-4") {
+        } else if (botName == "bot-4") {
             botActiv = 74;
         } else {
             botActiv = 98;
@@ -52,9 +61,12 @@ Game.ki = {
         } else if (this.questionDifficulty == 3) {
             botActiv = botActiv - 15;
         }
-        if (Game.static.rand() <= botActiv) {
+        console.log("selectAnswer: Wahrscheinlichkeit: " + botActiv + " Fragen Schwierigkeit: " + questionDifficulty);
+        if (Game.static.random(0, 100) <= botActiv) {
+            console.log("bot hat es gewust");
             return 1; //Gibt 1 Zurück falls die Antwort richtig ist.
         } else {
+            console.log("BOT hat verloren");
             return 0;
         }
     },
@@ -63,18 +75,22 @@ Game.ki = {
         var size = Game.static.getGameSize($element);
         var Fields = [];
 
-        for (var i = 0; i <= 2 * Game.static.getGameSize($element) - 1; i++) {
-            if (color = Game.static.getColor(Game.static.getElementByIndex($element, i))) {
-                Fields.push(Game.static.getElementByIndex($element, i))
+        for (var i = 0; i <= size * size - 1; i++) {
+            var $tmpElement = Game.static.getElementByIndex($element, i);
+            if (color == Game.static.getColor($tmpElement)) {
+                Fields.push($tmpElement);
             }
         }
 
         return Fields;
     },
     getOneAttackableField: function ($array) {
-        var nearbyElements = Game.static.getNearbyElements($array[Game.static.random(0, $array.length - 1)]);
+        $array = Game.static.shuffle($array);
+        var $randomElement = $array.pop();
+        var nearbyElements = Game.static.getNearbyElements($randomElement); //////is not a Function!!!!!
         if (nearbyElements.length != 0) {
-            return nearbyElements[Game.static.random(0, nearbyElements.length - 1)];
+            nearbyElements = Game.static.shuffle(nearbyElements);
+            return [$randomElement, nearbyElements.pop()];
         }
 
         else return Game.ki.getOneAttackableField($array);
